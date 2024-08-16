@@ -1,39 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:todolist_app/helpers/database_helper.dart';
+import 'package:provider/provider.dart';
 import 'package:todolist_app/models/todo.dart';
+import 'package:todolist_app/provider/theme_provider.dart';
+import 'package:todolist_app/provider/todo_provider.dart';
 
-class HomePage extends StatefulWidget {
-  final Function changeTheme;
-  final bool isDark;
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
-  const HomePage({super.key, required this.changeTheme, required this.isDark});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  late Future<List<Todo>> _todoList;
-
-  @override
-  void initState() {
-    super.initState();
-    _refreshTodoList();
-  }
-
-  void _refreshTodoList() {
-    setState(() {
-      _todoList = DatabaseHelper.instance.fetchTodos();
-    });
-  }
-
-  void _changeStatus(Todo todo) {
-    setState(() {
-      todo.isDone = !todo.isDone;
-    });
-  }
-
-  Future<void> _showTodoDialog({Todo? todo}) async {
+  Future<void> _showTodoDialog(BuildContext context, {Todo? todo}) async {
     final TextEditingController _controller =
         TextEditingController(text: todo?.title ?? '');
 
@@ -64,18 +38,19 @@ class _HomePageState extends State<HomePage> {
               onPressed: () async {
                 final String title = _controller.text;
                 if (title.isNotEmpty) {
+                  final todoProvider =
+                      Provider.of<TodoProvider>(context, listen: false);
                   if (todo == null) {
                     final newTodo = Todo(
                       title: title,
                       isDone: false,
                     );
-                    await DatabaseHelper.instance.insertTodo(newTodo);
+                    await todoProvider.addTodo(newTodo);
                   } else {
                     todo.title = title;
-                    await DatabaseHelper.instance.updateTodo(todo);
+                    await todoProvider.updateTodo(todo);
                   }
                   Navigator.of(context).pop();
-                  _refreshTodoList();
                 } else {
                   Navigator.pop(context);
                 }
@@ -89,6 +64,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final todoProvider = Provider.of<TodoProvider>(context);
+
+    if (todoProvider.todoList.isEmpty) {
+      todoProvider.fetchTodos();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -101,9 +83,9 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
-              widget.changeTheme();
+              themeProvider.toggleTheme();
             },
-            icon: widget.isDark
+            icon: themeProvider.isDark
                 ? const Icon(
                     Icons.light_mode,
                     size: 35,
@@ -115,32 +97,30 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: FutureBuilder<List<Todo>>(
-        future: _todoList,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return snapshot.data!.isEmpty
-              ? Opacity(
+      body: todoProvider.todoList.isEmpty
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Opacity(
                   opacity: 0.3,
-                  child: Center(
-                    child: Image.asset('images/icon_blank_notes.png'),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 120),
+                    child: Image.asset('images/note_icon.png',
+                        width: 100, height: 100),
                   ),
-                )
-              : ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    Todo todo = snapshot.data![index];
-                    return itemList(todo, context);
-                  },
-                );
-        },
-      ),
+                ),
+              ],
+            )
+          : ListView.builder(
+              itemCount: todoProvider.todoList.length,
+              itemBuilder: (context, index) {
+                Todo todo = todoProvider.todoList[index];
+                return itemList(todo, context);
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showTodoDialog(); // Menampilkan dialog untuk input todo baru
+          _showTodoDialog(context); // Menampilkan dialog untuk input todo baru
         },
         shape: const StadiumBorder(),
         child: const Icon(
@@ -152,6 +132,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget itemList(Todo todo, BuildContext context) {
+    final todoProvider = Provider.of<TodoProvider>(context);
+
     return ListTile(
       title: Text(
         todo.title,
@@ -161,8 +143,7 @@ class _HomePageState extends State<HomePage> {
       ),
       leading: IconButton(
         onPressed: () async {
-          _changeStatus(todo);
-          await DatabaseHelper.instance.updateTodo(todo);
+          todoProvider.toggleStatus(todo);
         },
         icon: todo.isDone
             ? const Icon(Icons.check_box)
@@ -178,8 +159,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: IconButton(
             onPressed: () async {
-              await DatabaseHelper.instance.deleteTodo(todo.id!);
-              _refreshTodoList();
+              await todoProvider.deleteTodo(todo.id!);
             },
             icon: const Icon(
               Icons.delete,
@@ -188,7 +168,8 @@ class _HomePageState extends State<HomePage> {
             )),
       ),
       onTap: () {
-        _showTodoDialog(todo: todo); // Menampilkan dialog untuk edit todo
+        _showTodoDialog(context,
+            todo: todo); // Menampilkan dialog untuk edit todo
       },
     );
   }
