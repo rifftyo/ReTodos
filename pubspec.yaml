@@ -63,7 +63,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - images/icon_blank_notes.png
+    - images/note_icon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
