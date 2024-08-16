@@ -123,23 +123,10 @@ class _HomePageState extends State<HomePage> {
           }
 
           return snapshot.data!.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset('images/icon_blank_notes.png'),
-                      const SizedBox(height: 5),
-                      Container(
-                        margin: const EdgeInsets.only(left: 20),
-                        child: const Text(
-                          'No Todo',
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+              ? Opacity(
+                  opacity: 0.3,
+                  child: Center(
+                    child: Image.asset('images/icon_blank_notes.png'),
                   ),
                 )
               : ListView.builder(
