@@ -3,64 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:todolist_app/models/todo.dart';
 import 'package:todolist_app/provider/theme_provider.dart';
 import 'package:todolist_app/provider/todo_provider.dart';
+import 'package:todolist_app/widgets/dialog_add_todo.dart';
+import 'package:todolist_app/widgets/item_todo.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  Future<void> _showTodoDialog(BuildContext context, {Todo? todo}) async {
-    final TextEditingController _controller =
-        TextEditingController(text: todo?.title ?? '');
-
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(todo == null ? 'Input To Do' : 'Edit To Do'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: TextField(
-              controller: _controller,
-              decoration: const InputDecoration(hintText: 'Input New Todo'),
-              autofocus: true,
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Batal'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(todo == null ? 'Simpan' : 'Update'),
-              onPressed: () async {
-                final String title = _controller.text;
-                if (title.isNotEmpty) {
-                  final todoProvider =
-                      Provider.of<TodoProvider>(context, listen: false);
-                  if (todo == null) {
-                    final newTodo = Todo(
-                      title: title,
-                      isDone: false,
-                    );
-                    await todoProvider.addTodo(newTodo);
-                  } else {
-                    todo.title = title;
-                    await todoProvider.updateTodo(todo);
-                  }
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,16 +58,59 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             )
-          : ListView.builder(
-              itemCount: todoProvider.todoList.length,
-              itemBuilder: (context, index) {
-                Todo todo = todoProvider.todoList[index];
-                return itemList(todo, context);
-              },
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 25),
+                  child: const Text('Search Your Todo',
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.w500)),
+                ),
+                const SizedBox(height: 15),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 25),
+                  child: TextField(
+                    onChanged: (value) {
+                      todoProvider.searchTodos(value);
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide.none,
+                      ),
+                      hintText: "Search Here...",
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                todoProvider.searchEmpty
+                    ? Center(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 45),
+                          child: Text(
+                            'No Todos Found',
+                            style: TextStyle(
+                                fontSize: 18, color: Colors.grey[600]),
+                          ),
+                        ),
+                      )
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: todoProvider.todoList.length,
+                          itemBuilder: (context, index) {
+                            Todo todo = todoProvider.todoList[index];
+                            return itemList(todo, context);
+                          },
+                        ),
+                      ),
+              ],
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showTodoDialog(context); // Menampilkan dialog untuk input todo baru
+          showTodoDialog(context); // Menampilkan dialog untuk input todo baru
         },
         shape: const StadiumBorder(),
         child: const Icon(
@@ -128,49 +118,6 @@ class HomePage extends StatelessWidget {
           size: 40,
         ),
       ),
-    );
-  }
-
-  Widget itemList(Todo todo, BuildContext context) {
-    final todoProvider = Provider.of<TodoProvider>(context);
-
-    return ListTile(
-      title: Text(
-        todo.title,
-        style: TextStyle(
-            decoration:
-                todo.isDone ? TextDecoration.lineThrough : TextDecoration.none),
-      ),
-      leading: IconButton(
-        onPressed: () async {
-          todoProvider.toggleStatus(todo);
-        },
-        icon: todo.isDone
-            ? const Icon(Icons.check_box)
-            : const Icon(Icons.check_box_outline_blank),
-      ),
-      trailing: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-        width: 40,
-        decoration: BoxDecoration(
-          shape: BoxShape.rectangle,
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: IconButton(
-            onPressed: () async {
-              await todoProvider.deleteTodo(todo.id!);
-            },
-            icon: const Icon(
-              Icons.delete,
-              color: Colors.white,
-              size: 20,
-            )),
-      ),
-      onTap: () {
-        _showTodoDialog(context,
-            todo: todo); // Menampilkan dialog untuk edit todo
-      },
     );
   }
 }
