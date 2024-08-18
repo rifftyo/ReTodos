@@ -1,4 +1,4 @@
-# todolist_app
+# Retods (Todo App)
 
 A new Flutter project.
 
