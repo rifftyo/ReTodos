@@ -2,58 +2,73 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todolist_app/models/todo.dart';
 import 'package:todolist_app/provider/todo_provider.dart';
+import 'package:todolist_app/widgets/dialog_alarm.dart';
 
 Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
-    final TextEditingController _controller =
-        TextEditingController(text: todo?.title ?? '');
+  final TextEditingController _controller =
+      TextEditingController(text: todo?.title ?? '');
 
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(todo == null ? 'Input To Do' : 'Edit To Do'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: TextField(
-              controller: _controller,
-              decoration: const InputDecoration(hintText: 'Input New Todo'),
-              autofocus: true,
-            ),
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(todo == null ? 'Input To Do' : 'Edit To Do'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: TextField(
+            controller: _controller,
+            decoration: const InputDecoration(hintText: 'Input New Todo'),
+            autofocus: true,
           ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Batal'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: Text(todo == null ? 'Simpan' : 'Update'),
-              onPressed: () async {
-                final String title = _controller.text;
-                if (title.isNotEmpty) {
-                  final todoProvider =
-                      Provider.of<TodoProvider>(context, listen: false);
-                  if (todo == null) {
-                    final newTodo = Todo(
-                      title: title,
-                      isDone: false,
-                    );
-                    await todoProvider.addTodo(newTodo);
+        ),
+        actions: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(15),
+                  color: Theme.of(context).cardColor,
+                ),
+                child: TextButton(
+                  child: const Text('Set Alarm',
+                      style: TextStyle(
+                        color: Colors.red,
+                      )),
+                  onPressed: () {
+                    showAlarmDialog(context);
+                  },
+                ),
+              ),
+              TextButton(
+                child: Text(todo == null ? 'Simpan' : 'Update'),
+                onPressed: () async {
+                  final String title = _controller.text;
+                  if (title.isNotEmpty) {
+                    final todoProvider =
+                        Provider.of<TodoProvider>(context, listen: false);
+                    if (todo == null) {
+                      final newTodo = Todo(
+                        title: title,
+                        isDone: false,
+                      );
+                      await todoProvider.addTodo(newTodo);
+                    } else {
+                      todo.title = title;
+                      await todoProvider.updateTodo(todo);
+                    }
+                    Navigator.of(context).pop();
                   } else {
-                    todo.title = title;
-                    await todoProvider.updateTodo(todo);
+                    Navigator.pop(context);
                   }
-                  Navigator.of(context).pop();
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+                },
+              ),
+            ],
+          ),
+        ],
+      );
+    },
+  );
+}
