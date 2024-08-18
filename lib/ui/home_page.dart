@@ -11,7 +11,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
     final todoProvider = Provider.of<TodoProvider>(context);
 
     if (todoProvider.todoList.isEmpty) {
@@ -28,19 +27,23 @@ class HomePage extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              themeProvider.toggleTheme();
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              return IconButton(
+                onPressed: () {
+                  themeProvider.toggleTheme();
+                },
+                icon: themeProvider.isDark
+                    ? const Icon(
+                        Icons.light_mode,
+                        size: 35,
+                      )
+                    : const Icon(
+                        Icons.dark_mode,
+                        size: 35,
+                      ),
+              );
             },
-            icon: themeProvider.isDark
-                ? const Icon(
-                    Icons.light_mode,
-                    size: 35,
-                  )
-                : const Icon(
-                    Icons.dark_mode,
-                    size: 35,
-                  ),
           ),
         ],
       ),
@@ -86,26 +89,30 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 15),
-                todoProvider.searchEmpty
-                    ? Center(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 45),
-                          child: Text(
-                            'No Todos Found',
-                            style: TextStyle(
-                                fontSize: 18, color: Colors.grey[600]),
-                          ),
-                        ),
-                      )
-                    : Expanded(
-                        child: ListView.builder(
-                          itemCount: todoProvider.todoList.length,
-                          itemBuilder: (context, index) {
-                            Todo todo = todoProvider.todoList[index];
-                            return itemList(todo, context);
-                          },
-                        ),
-                      ),
+                Consumer<TodoProvider>(
+                  builder: (context, todoProvider, _) {
+                    return todoProvider.searchEmpty
+                        ? Center(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(vertical: 45),
+                              child: Text(
+                                'No Todos Found',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.grey[600]),
+                              ),
+                            ),
+                          )
+                        : Expanded(
+                            child: ListView.builder(
+                              itemCount: todoProvider.todoList.length,
+                              itemBuilder: (context, index) {
+                                Todo todo = todoProvider.todoList[index];
+                                return itemList(todo, context);
+                              },
+                            ),
+                          );
+                  },
+                ),
               ],
             ),
       floatingActionButton: FloatingActionButton(
