@@ -20,12 +20,14 @@ final darkTheme = ThemeData(
   primaryColor: Colors.orange,
   primarySwatch: Colors.blue,
   brightness: Brightness.dark,
+  cardColor: Colors.black26,
 );
 
 final lightTheme = ThemeData(
   primaryColor: Colors.orange,
   primarySwatch: Colors.blue,
   brightness: Brightness.light,
+  cardColor: Colors.amber[100],
 );
 
 class MyApp extends StatelessWidget {
@@ -34,11 +36,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
+      builder: (context, themeProvider, _) {
         return MaterialApp(
           theme: themeProvider.isDark ? darkTheme : lightTheme,
           debugShowCheckedModeBanner: false,
-          title: 'TodoList App',
+          title: 'Retods',
           home: const HomePage(),
         );
       },
