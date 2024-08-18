@@ -7,41 +7,44 @@ import 'package:todolist_app/widgets/dialog_add_todo.dart';
 Widget itemList(Todo todo, BuildContext context) {
   final todoProvider = Provider.of<TodoProvider>(context);
 
-  return ListTile(
-    title: Text(
-      todo.title,
-      style: TextStyle(
-          decoration:
-              todo.isDone ? TextDecoration.lineThrough : TextDecoration.none),
-    ),
-    leading: IconButton(
-      onPressed: () async {
-        todoProvider.toggleStatus(todo);
-      },
-      icon: todo.isDone
-          ? const Icon(Icons.check_box)
-          : const Icon(Icons.check_box_outline_blank),
-    ),
-    trailing: Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-      width: 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        color: Colors.red,
-        borderRadius: BorderRadius.circular(10),
+  return Opacity(
+    opacity: todo.isDone ? 0.3 : 1.0,
+    child: ListTile(
+      title: Text(
+        todo.title,
+        style: TextStyle(
+            decoration:
+                todo.isDone ? TextDecoration.lineThrough : TextDecoration.none),
       ),
-      child: IconButton(
-          onPressed: () async {
-            await todoProvider.deleteTodo(todo.id!);
-          },
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.white,
-            size: 20,
-          )),
+      leading: IconButton(
+        onPressed: () async {
+          todoProvider.toggleStatus(todo);
+        },
+        icon: todo.isDone
+            ? const Icon(Icons.check_box)
+            : const Icon(Icons.check_box_outline_blank),
+      ),
+      trailing: Container(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+        width: 40,
+        decoration: BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: IconButton(
+            onPressed: () async {
+              await todoProvider.deleteTodo(todo.id!);
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.white,
+              size: 20,
+            )),
+      ),
+      onTap: () {
+        showTodoDialog(context, todo: todo); // Menampilkan dialog untuk edit todo
+      },
     ),
-    onTap: () {
-      showTodoDialog(context, todo: todo); // Menampilkan dialog untuk edit todo
-    },
   );
 }
