@@ -39,13 +39,14 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                       return TextButton(
                         child: Text(
                           selectedDate != null
-                              ? DateFormat('dd/MM/yy HH:mm').format(selectedDate)
+                              ? DateFormat('dd/MM/yy HH:mm')
+                                  .format(selectedDate)
                               : 'Set Alarm',
                           style: const TextStyle(
                             color: Colors.red,
                           ),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           timePicker.selectDateTime(context);
                         },
                       );
@@ -58,17 +59,27 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                   if (title.isNotEmpty) {
                     final todoProvider =
                         Provider.of<TodoProvider>(context, listen: false);
+                    final timePickerProvider =
+                        Provider.of<TimePickerProvider>(context, listen: false);
+                    final timeSet = timePickerProvider.selectedDateTime;
                     if (todo == null) {
                       final newTodo = Todo(
                         title: title,
+                        date: timeSet != null
+                            ? DateFormat('dd/MM/yy HH:mm').format(timeSet)
+                            : '',
                         isDone: false,
                       );
                       await todoProvider.addTodo(newTodo);
                     } else {
                       todo.title = title;
+                      todo.date = timeSet != null
+                          ? DateFormat('dd/MM/yy HH:mm').format(timeSet)
+                          : '';
                       await todoProvider.updateTodo(todo);
                     }
                     Navigator.of(context).pop();
+                    timePickerProvider.resetSelectedDateTime();
                   } else {
                     Navigator.pop(context);
                   }
