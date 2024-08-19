@@ -16,6 +16,7 @@ Widget itemList(Todo todo, BuildContext context) {
             decoration:
                 todo.isDone ? TextDecoration.lineThrough : TextDecoration.none),
       ),
+      subtitle: todo.date != null ? Text(todo.date!) : null,
       leading: IconButton(
         onPressed: () async {
           todoProvider.toggleStatus(todo);
@@ -43,7 +44,8 @@ Widget itemList(Todo todo, BuildContext context) {
             )),
       ),
       onTap: () {
-        showTodoDialog(context, todo: todo); // Menampilkan dialog untuk edit todo
+        showTodoDialog(context,
+            todo: todo); // Menampilkan dialog untuk edit todo
       },
     ),
   );
