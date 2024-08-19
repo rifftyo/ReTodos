@@ -1,11 +1,13 @@
 class Todo {
   int? id;
   String title;
+  String? date;
   bool isDone;
 
   Todo({
     this.id,
     required this.title,
+    this.date = '',
     this.isDone = true,
   });
 
@@ -13,6 +15,7 @@ class Todo {
     return {
       'id': id,
       'title': title,
+      'date': date,
       'isDone': isDone ? 1 : 0,
     };
   }
@@ -21,6 +24,7 @@ class Todo {
     return Todo(
       id: map['id'],
       title: map['title'],
+      date: map['date'],
       isDone: map['isDone'] == 1,
     );
   }
