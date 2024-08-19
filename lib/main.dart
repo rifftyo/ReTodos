@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todolist_app/provider/theme_provider.dart';
+import 'package:todolist_app/provider/time_picker_provider.dart';
 import 'package:todolist_app/provider/todo_provider.dart';
 import 'package:todolist_app/ui/home_page.dart';
 
@@ -10,6 +11,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => TodoProvider()),
+        ChangeNotifierProvider(create: (_) => TimePickerProvider()),
       ],
       child: const MyApp(),
     ),
