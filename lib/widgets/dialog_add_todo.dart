@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todolist_app/models/todo.dart';
+import 'package:todolist_app/provider/time_picker_provider.dart';
 import 'package:todolist_app/provider/todo_provider.dart';
-import 'package:todolist_app/widgets/dialog_alarm.dart';
 
 Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
   final TextEditingController _controller =
@@ -27,21 +28,29 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(15),
-                  color: Theme.of(context).cardColor,
-                ),
-                child: TextButton(
-                  child: const Text('Set Alarm',
-                      style: TextStyle(
-                        color: Colors.red,
-                      )),
-                  onPressed: () {
-                    showAlarmDialog(context);
-                  },
-                ),
-              ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(15),
+                    color: Theme.of(context).cardColor,
+                  ),
+                  child: Consumer<TimePickerProvider>(
+                    builder: (context, timePicker, child) {
+                      final selectedDate = timePicker.selectedDateTime;
+                      return TextButton(
+                        child: Text(
+                          selectedDate != null
+                              ? DateFormat('dd/MM/yy HH:mm').format(selectedDate)
+                              : 'Set Alarm',
+                          style: const TextStyle(
+                            color: Colors.red,
+                          ),
+                        ),
+                        onPressed: () {
+                          timePicker.selectDateTime(context);
+                        },
+                      );
+                    },
+                  )),
               TextButton(
                 child: Text(todo == null ? 'Simpan' : 'Update'),
                 onPressed: () async {
