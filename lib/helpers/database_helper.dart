@@ -21,7 +21,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
     );
   }
@@ -31,6 +31,7 @@ class DatabaseHelper {
     CREATE TABLE todos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
+      date TEXT,
       isDone INTEGER NOT NULL
     )
     ''');
