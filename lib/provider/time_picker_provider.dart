@@ -13,14 +13,15 @@ class TimePickerProvider extends ChangeNotifier {
       firstDate: DateTime(2024),
       lastDate: DateTime(2025),
     );
-    
+
     if (pickedDate != null) {
       // Pilih Waktu
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
-        initialTime: TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
+        initialTime:
+            TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
       );
-      
+
       if (pickedTime != null) {
         _selectedDateTime = DateTime(
           pickedDate.year,
@@ -32,5 +33,10 @@ class TimePickerProvider extends ChangeNotifier {
         notifyListeners();
       }
     }
+  }
+
+  void resetSelectedDateTime() {
+    _selectedDateTime = null;
+    notifyListeners();
   }
 }
