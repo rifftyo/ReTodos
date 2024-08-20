@@ -7,7 +7,7 @@ class Todo {
   Todo({
     this.id,
     required this.title,
-    this.date = '',
+    this.date,
     this.isDone = true,
   });
 
