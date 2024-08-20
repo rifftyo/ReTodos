@@ -41,7 +41,9 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                           selectedDate != null
                               ? DateFormat('dd/MM/yy HH:mm')
                                   .format(selectedDate)
-                              : 'Set Alarm',
+                              : todo?.date != null
+                                  ? todo!.date.toString()
+                                  : 'Set Alarm',
                           style: const TextStyle(
                             color: Colors.red,
                           ),
@@ -67,7 +69,7 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                         title: title,
                         date: timeSet != null
                             ? DateFormat('dd/MM/yy HH:mm').format(timeSet)
-                            : '',
+                            : null,
                         isDone: false,
                       );
                       await todoProvider.addTodo(newTodo);
@@ -75,7 +77,7 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                       todo.title = title;
                       todo.date = timeSet != null
                           ? DateFormat('dd/MM/yy HH:mm').format(timeSet)
-                          : '';
+                          : todo.date;
                       await todoProvider.updateTodo(todo);
                     }
                     Navigator.of(context).pop();
