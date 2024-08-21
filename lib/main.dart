@@ -1,11 +1,17 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todolist_app/helpers/notifications_helper.dart';
 import 'package:todolist_app/provider/theme_provider.dart';
 import 'package:todolist_app/provider/time_picker_provider.dart';
 import 'package:todolist_app/provider/todo_provider.dart';
 import 'package:todolist_app/ui/home_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AndroidAlarmManager.initialize();
+  final NotificationsHelper notificationsHelper = NotificationsHelper();
+  await notificationsHelper.initNotifications();
   runApp(
     MultiProvider(
       providers: [
