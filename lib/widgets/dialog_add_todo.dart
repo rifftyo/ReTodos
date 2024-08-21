@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todolist_app/models/todo.dart';
 import 'package:todolist_app/provider/time_picker_provider.dart';
 import 'package:todolist_app/provider/todo_provider.dart';
+import 'package:todolist_app/utils/show_notification.dart';
 
 Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
   final TextEditingController _controller =
@@ -85,6 +86,7 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                   } else {
                     Navigator.pop(context);
                   }
+                  showNotification();
                 },
               ),
             ],
