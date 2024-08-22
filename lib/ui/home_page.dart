@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
         title: Container(
           margin: const EdgeInsets.all(10),
           child: const Text(
-            'Todo List',
+            'ReTods',
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 25),
           ),
         ),
