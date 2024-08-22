@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -59,12 +60,12 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                 child: Text(todo == null ? 'Simpan' : 'Update'),
                 onPressed: () async {
                   final String title = _controller.text;
+                  final timePickerProvider =
+                      Provider.of<TimePickerProvider>(context, listen: false);
+                  final timeSet = timePickerProvider.selectedDateTime;
                   if (title.isNotEmpty) {
                     final todoProvider =
                         Provider.of<TodoProvider>(context, listen: false);
-                    final timePickerProvider =
-                        Provider.of<TimePickerProvider>(context, listen: false);
-                    final timeSet = timePickerProvider.selectedDateTime;
                     if (todo == null) {
                       final newTodo = Todo(
                         title: title,
@@ -81,12 +82,22 @@ Future<void> showTodoDialog(BuildContext context, {Todo? todo}) async {
                           : todo.date;
                       await todoProvider.updateTodo(todo);
                     }
+
+                    if (timeSet != null) {
+                      final duration = timeSet.difference(DateTime.now());
+                      await AndroidAlarmManager.oneShot(
+                        duration,
+                        0,
+                        showNotification,
+                        exact: true,
+                        wakeup: true,
+                      );
+                    }
                     Navigator.of(context).pop();
                     timePickerProvider.resetSelectedDateTime();
                   } else {
                     Navigator.pop(context);
                   }
-                  showNotification();
                 },
               ),
             ],
