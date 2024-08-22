@@ -6,7 +6,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 class NotificationsHelper {
   Future<void> initNotifications() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('icon_notification');
+        AndroidInitializationSettings('notification_icon');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(
