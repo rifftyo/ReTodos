@@ -9,6 +9,7 @@ Future<void> showNotification() async {
     importance: Importance.max,
     priority: Priority.high,
     ticker: 'ticker',
+    sound: RawResourceAndroidNotificationSound('sound_notification'),
   );
 
   const NotificationDetails platformChannelSpesifics =
@@ -16,5 +17,5 @@ Future<void> showNotification() async {
 
   await flutterLocalNotificationsPlugin.show(
       0, 'Alarm', 'Todo Expirated', platformChannelSpesifics,
-      payload: 'Alarm triggered');
+      payload: 'Item ID');
 }
