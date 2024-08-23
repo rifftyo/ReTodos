@@ -8,7 +8,7 @@ class Todo {
     this.id,
     required this.title,
     this.date,
-    this.isDone = true,
+    this.isDone = false,
   });
 
   Map<String, dynamic> toMap() {
