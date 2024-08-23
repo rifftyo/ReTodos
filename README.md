@@ -28,3 +28,6 @@ Retods is a task management application designed to help you easily organize and
 - intl
 - android alarm manager plus
 - flutter local notifications
+
+# Donwload
+Try Now https://bit.ly/ReTodsApp
